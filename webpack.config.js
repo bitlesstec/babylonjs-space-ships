@@ -24,12 +24,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',  // template html
     }),
-    // new CopyWebpackPlugin({
-    //     patterns: [
-    //         { from: 'src/textures', to: 'textures' },  //copy textures to dist/textures folder
-    //         { from: 'src/sounds', to: 'sounds' }, //copy sounds to dist/sound folder
-    //     ],
-    // }),
+    new CopyWebpackPlugin({
+        patterns: [
+            { from: 'src/assets', to: 'assets' },  //copy textures to dist/textures folder
+            // { from: 'src/sounds', to: 'sounds' }, //copy sounds to dist/sound folder
+        ],
+    }),
   ],
   devServer: {
     static: './dist',

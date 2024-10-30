@@ -9,4 +9,5 @@ export enum GameState
     PAUSE, 
     WON,
     SAVING_DATA,
+    BEFORE_START
 }

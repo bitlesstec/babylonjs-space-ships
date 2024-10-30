@@ -7,6 +7,7 @@ import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight,
      Mesh, Camera, Color3, StandardMaterial, Texture, Sound } from '@babylonjs/core';
 import  * as GUI from '@babylonjs/gui';
 import { Level1 } from './levels/Level1';
+import TitleLevel from './levels/TitleLevel';
 
 
 
@@ -15,17 +16,21 @@ const canvas = document.querySelector("#canvas") as HTMLCanvasElement; //documen
 
 const engine = new Engine(canvas, true);
 
-const scene = new Level1(engine);
+// const scene = new Level1(engine);
+let level:any = undefined;//new TitleLevel(engine); 
 
-
-
+loadLevel( new TitleLevel(engine) )
 
 // Renderizar el escenario
 engine.runRenderLoop(() => 
 {
 
-    scene.update();
-    scene.render();
+    if( level !== undefined)
+    {
+        level.update();
+        level.render();
+    }
+ 
 
 });
 
@@ -33,6 +38,17 @@ engine.runRenderLoop(() =>
 window.addEventListener('resize', () => {
     engine.resize();
 });
+
+export default function loadLevel( newLevel:any )
+{
+    if( level !== undefined )
+    {
+        level.scene.dispose() //  scene.dispose();
+    }
+
+    level = newLevel;
+
+}
 
 
 
