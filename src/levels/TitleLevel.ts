@@ -111,7 +111,14 @@ export default class TitleLevel implements Updatable, Renderable, Initiable
         
         
 
-        this.blinkTimer = new Timer( 35 );
+        this.blinkTimer = new Timer( 35 , 
+        ()=>{ 
+            this.showText = !this.showText;
+            this.msgBlock.isVisible = this.showText;
+            this.bgBlock.isVisible = this.showText;
+            this.blinkTimer.reset();
+            }
+    );
         this.showText = true;
 
 
@@ -188,12 +195,7 @@ export default class TitleLevel implements Updatable, Renderable, Initiable
         {
             case GameState.LOADING:
              //this will make the text blink to make the user start with a kerboard event
-             this.blinkTimer.process( ()=>{ 
-                this.showText = !this.showText;
-                this.msgBlock.isVisible = this.showText;
-                this.bgBlock.isVisible = this.showText;
-                this.blinkTimer.setCounter( 35 )
-            })
+             this.blinkTimer.process( )
             case GameState.PAUSE:
             case GameState.PLAYING:
             break;

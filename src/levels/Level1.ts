@@ -14,7 +14,7 @@ import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight,
      Mesh, Camera, Color3, StandardMaterial, Texture, Sound, 
      Sprite,
      SpriteManager,
-     AdvancedTimer} from '@babylonjs/core';
+     AdvancedTimer  } from '@babylonjs/core';
 import  * as GUI from '@babylonjs/gui';
 
 export class Level1 implements Updatable, Renderable, Initiable
@@ -78,6 +78,13 @@ export class Level1 implements Updatable, Renderable, Initiable
     explosion:Explosion;
 
 
+    bgmusic:Sound;
+    laserSfx:Sound;
+    shipExplosionSfx:Sound;
+    eneExplosionSfx:Sound;
+
+
+
     constructor( engine: Engine )
     {
         this.currentGameState = GameState.LOADING;   
@@ -126,6 +133,7 @@ export class Level1 implements Updatable, Renderable, Initiable
 
 
 
+        this.setSound()
         
         this.setStarFiled();
 
@@ -135,6 +143,7 @@ export class Level1 implements Updatable, Renderable, Initiable
 
 
         this.setEnemies();
+
         this.setEnemyBullets()
 
         this.setUI()
@@ -201,6 +210,8 @@ export class Level1 implements Updatable, Renderable, Initiable
                                 // this.explosion .explode()
                             break;
                             case "Enter":
+                                if( this.currentGameState === GameState.GAME_OVER ) return;
+
                                 if( this.currentGameState === GameState.PLAYING )
                                 { 
                                     this.currentGameState =  GameState.PAUSE;
@@ -245,13 +256,10 @@ export class Level1 implements Updatable, Renderable, Initiable
             
             case GameState.PAUSE:
             case GameState.PLAYING:
+            case GameState.GAME_OVER:
                 this.scene.render()
             break;
-
-            case GameState.GAME_OVER:
-
-            break;
-
+            
         }
     
     }
@@ -395,6 +403,8 @@ export class Level1 implements Updatable, Renderable, Initiable
                 // console.log( this.lasers[idx] )
                  if( !this.lasers[idx].isVisible )
                 {
+                    if(this.laserSfx.isReady())
+                    this.laserSfx.play();
                     // this.lasers[idx].position.x = ;
                     // this.lasers[idx].position.y = ;
                     this.lasers[idx].setEnabled(true)
@@ -487,6 +497,7 @@ export class Level1 implements Updatable, Renderable, Initiable
                             if( laser.intersectsMesh( this.enemies[x].collider, false ) && this.enemies[x].sprite.isVisible )
                             {
                                 //console.log("ene3 col: ", x)
+                                this.eneExplosionSfx.play()
                                 
                                 const exploPos =   this.enemies[x].sprite.position.clone()
                                 this.enemies[x].sprite.isVisible=false;
@@ -560,14 +571,14 @@ export class Level1 implements Updatable, Renderable, Initiable
             const enemy1 = {
                 "sprite": ene1,
                 "collider": ene1Collider,
-                "timer": new Timer( this.randomNumber( 0, 200) ),
+                "timer": new Timer( this.randomNumber( 0, 200), () => this.setEnemyShootTimer(enemy1) ),
                 "explosion": new Explosion( Vector3.Zero(), this.scene )
             }
 
             const enemy2 = {
                 "sprite": ene2,
                 "collider": ene2Collider,
-                "timer": new Timer( this.randomNumber( 0, 200) ),
+                "timer": new Timer( this.randomNumber( 0, 200), () => this.setEnemyShootTimer(enemy2) ),
                 "explosion": new Explosion( Vector3.Zero(), this.scene )
             }
 
@@ -605,12 +616,7 @@ export class Level1 implements Updatable, Renderable, Initiable
                     this.enemies[idx].sprite.position.x-= .06;
                     this.enemies[idx].collider.position = this.enemies[idx].sprite.position
 
-                    this.enemies[idx].timer.process(  ()=>{
-
-                        this.shootEneBullet( this.enemies[idx].sprite.position, this.ship.sprite.position );
-
-                        this.enemies[idx].timer.setCounter( this.randomNumber( 0, 200) ); // set again the timer                  
-                    });
+                    this.enemies[idx].timer.process();
 
                    //if enemy goes beyong port view, hide it to prevent process
                     if( this.enemies[idx].sprite.position.x < - 9 )
@@ -687,8 +693,9 @@ export class Level1 implements Updatable, Renderable, Initiable
                      eneBullet.position.addInPlace( this.eneBullets[idx].direction.scale(0.05 ) );
 
 
-                     if( eneBullet.intersectsMesh(   this.ship.collider, false ) && this.ship.collider.isEnabled() )
+                     if( eneBullet.intersectsMesh( this.ship.collider, false ) && this.ship.collider.isEnabled() )
                      {
+                        this.shipExplosionSfx.play();
                         eneBullet.isVisible = false;
 
                         this.ship.explosion.explode( this.ship.sprite.position.clone(), ()=>{
@@ -767,8 +774,8 @@ setUI()
 
     this.msgBlock.color = 'white';
     this.msgBlock.fontSize = 24;
-    this.msgBlock.top = '-100px'; 
-    this.msgBlock.left = '40px';
+    this.msgBlock.top = '0px'; 
+    this.msgBlock.left = '0px';
     this.advancedTexture.addControl( this.msgBlock );
     this.msgBlock.isVisible=false;
 
@@ -802,10 +809,34 @@ setGameOver()
 {
 
    
-    this.msgBlock.text = "GAME OVER\n total Score: "+this.score;
-    this.msgBlock.isVisible = true;
+    // console.log( "GAME OVER: " , this.msgBlock.isVisible)
+    this.msgBlock.text = "GAME OVER\ntotal Score: "+this.score;
+         this.msgBlock.isVisible = true;
 
     this.currentGameState = GameState.GAME_OVER;
+}
+
+
+setEnemyShootTimer( enemy:Enemy ):void
+{
+    this.shootEneBullet( enemy.sprite.position, this.ship.sprite.position );
+    enemy.timer.setCounter( this.randomNumber( 0, 200) ); // set again the timer 
+}
+
+setSound()
+{
+    this.bgmusic = new Sound( "bgmusic", "/assets/sounds/music/level1.ogg", this.scene, null, {
+        loop: true,
+        autoplay: true
+      });
+
+ 
+    this.laserSfx = new Sound( "lasersfx", "/assets/sounds/sfx/laser.wav", this.scene);
+    this.shipExplosionSfx = new Sound( "shipExplosion", "/assets/sounds/sfx/shipexplosion.wav", this.scene);
+    this.eneExplosionSfx = new Sound( "eneExplosion", "/assets/sounds/sfx/enexplosion.wav", this.scene);
+
+
+    // this.bgmusic.play()
 }
 
 }

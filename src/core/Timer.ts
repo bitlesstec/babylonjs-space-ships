@@ -9,62 +9,74 @@ export class Timer
      /**
      * to know whether the timer is active or not
      */
-    private active: boolean;
-    private counter: number;
-
+    public active: boolean;
+    public initialCounter:number;
+    public counter: number;
+    private callback?: ()=>void;
 
     /**
-     * this is optionat just in case you may need to activate the timer after creationg
-     * @param counter ammount of frames until the executor can be called
+     * Creates an inactive timer by default. Optionally, provide a counter and callback to start it immediately.
+     * @param counter - Optional number of frames until the timer expires.
+     * @param callback - Optional function to execute when the timer expires.
      */
-    constructor(counter?:number)
+    constructor(counter?:number, callback?: () => void)
     {
         if(counter)
         {
             this.active = true;
             this.counter = counter;
+            this.initialCounter = counter;
         }
         else{
             this.active = false;
             this.counter = 0;    
+            this.initialCounter=0;
+        }
+
+        if(callback)
+        {
+            this.callback = callback;
         }
     }
 
     /**
-     * this is to set any process to be executed after several gamethicks
-     * this will decrese the counter every game thick ( every frame ) if the timer is active ( active = true )
-     * after time is done will executhe the callback function "execute"
-     * @param executer 
+     * Executes the timer, decrementing the counter if active. 
+     * Calls the callback when the counter reaches zero.
      */
-    process( executor = function(){} )
+    process( )
     {
+        if(!this.active)return;
+
         this.counter--;
 
-        if( this.counter < 1 && this.active )
+        if( this.counter <= 0  )
         {
             this.counter = 0;
             this.active = false;
-            executor();//.execute();
+            
+            if (this.callback) this.callback();
         }
 
     }//
 
     /**
-     * returns current counter
+     * Resets the timer to its initial counter value,
+     * and makes the Timer active again
      */
-    getCounter():number
-    { return this.counter }
+    reset(): void {
+        this.counter = this.initialCounter;
+        this.active = this.counter > 0;
+    }
 
 
-    /**
-     * every time a new counter value is set, then the task will be activated,
-     * to deactivate this task at any time then set the counter to 0
-     * @param counter 
+     /**
+     * Sets a new counter value and activates the timer if the value is greater than 0.
+     * @param counter - New counter value to set.
      */
-    setCounter( counter:number ):void
-    { 
-        this.counter = counter; 
-        this.active = ( counter === 0 )? false : true;
+     setCounter(counter: number): void {
+        this.counter = counter;
+        this.initialCounter = counter;
+        this.active = counter > 0;
     }
 
 

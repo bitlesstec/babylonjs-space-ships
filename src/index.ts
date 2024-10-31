@@ -15,6 +15,7 @@ import TitleLevel from './levels/TitleLevel';
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement; //document.createElement('canvas');
 
 const engine = new Engine(canvas, true);
+Engine.audioEngine.setGlobalVolume( 1 );
 
 // const scene = new Level1(engine);
 let level:any = undefined;//new TitleLevel(engine); 
