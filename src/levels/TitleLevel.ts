@@ -44,6 +44,7 @@ export default class TitleLevel implements Updatable, Renderable, Initiable
     showText:boolean;
 
     titleImage:GUI.Image;
+    splashImg:GUI.Image;
 
 
     tittleScreen:GUI.AdvancedDynamicTexture;
@@ -88,6 +89,13 @@ export default class TitleLevel implements Updatable, Renderable, Initiable
         this.titleImage.height = 1; // 100% de la altura de la UI
         this.advancedTexture .addControl( this.titleImage )
         this.titleImage.isVisible=false;
+
+        this.splashImg =  new GUI.Image("splasScreenImg","/assets/BitlessSoloLogo.png");
+        this.splashImg.stretch = GUI.Image.STRETCH_UNIFORM ; // Estira la imagen para llenar toda la pantalla
+        this.splashImg.width = .5;  // 100% del ancho de la UI
+        this.splashImg.height = .5; // 100% de la altura de la UI
+        this.advancedTexture .addControl( this.splashImg )
+        // this.splashImg.isVisible=true;
 
         this.msgBlock = new GUI.TextBlock();
         this.msgBlock.color = 'white';
@@ -141,6 +149,7 @@ export default class TitleLevel implements Updatable, Renderable, Initiable
 
                             //show image title
                             this.titleImage.isVisible=true;
+                            this.splashImg.isVisible=false;
 
                             //display background and text to start game
                             this.msgBlock.isVisible = true;

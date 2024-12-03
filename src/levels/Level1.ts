@@ -499,14 +499,15 @@ export class Level1 implements Updatable, Renderable, Initiable
                                 //console.log("ene3 col: ", x)
                                 this.eneExplosionSfx.play()
                                 
-                                const exploPos =   this.enemies[x].sprite.position.clone()
-                                this.enemies[x].sprite.isVisible=false;
-                                const pos = new Vector3( 100, 100, 0)
+                                const exploPos = this.enemies[x].sprite.position.clone()
+                                // this.enemies[x].sprite.isVisible=false;
+                                const pos = new Vector3( this.randomNumber(8, 16), this.randomNumber(-5, 5), 0) 
                                 this.enemies[x].sprite.position = pos;
                                 this.enemies[x].collider.position = pos;
+
                                 this.score+=10;
                                 
-                               this.lasers[idx].isVisible=false;
+                               this.lasers[idx].isVisible=false
 
                                 this.enemies[x].explosion.explode( exploPos )
                             }
@@ -618,11 +619,13 @@ export class Level1 implements Updatable, Renderable, Initiable
 
                     this.enemies[idx].timer.process();
 
-                   //if enemy goes beyong port view, hide it to prevent process
-                    if( this.enemies[idx].sprite.position.x < - 9 )
+                   //if enemy goes beyong port view, move it back to random position to 
+                   //apprear again in the game
+                    if( this.enemies[idx].sprite.position.x < -9 )
                     {
-                        this.enemies[idx].sprite.isVisible = false;
-
+                        // this.enemies[idx].sprite.isVisible = false;
+                        const pos = new Vector3( this.randomNumber(8, 16), this.randomNumber(-5, 5), 0) 
+                        this.enemies[idx].sprite.position = pos;
                     }
 
                 }
@@ -820,7 +823,7 @@ setGameOver()
 setEnemyShootTimer( enemy:Enemy ):void
 {
     this.shootEneBullet( enemy.sprite.position, this.ship.sprite.position );
-    enemy.timer.setCounter( this.randomNumber( 0, 200) ); // set again the timer 
+    enemy.timer.setCounter( this.randomNumber( 300, 400) ); // set again the timer 
 }
 
 setSound()
