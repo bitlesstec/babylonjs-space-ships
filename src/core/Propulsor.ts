@@ -5,17 +5,15 @@ import { Color4, Mesh, ParticleSystem, Scene, Texture, Vector3 } from "@babylonj
  * will represent ship propulsor using particles,
  * 
  */
-export default class Propulsor
-{
+export default class Propulsor {
 
 
-    partSysten = ParticleSystem;
+    // partSysten : ParticleSystem;
 
-    constructor( spaceShip:Mesh, scene:Scene )
-    {
+    constructor(spaceShip: Mesh, scene: Scene) {
 
-        const particleSystem = new ParticleSystem("propulsorParticles", 300 , scene);
-        particleSystem.particleTexture = new Texture("/assets/textures/particle.png" , scene);
+        const particleSystem = new ParticleSystem("propulsorParticles", 300, scene);
+        particleSystem.particleTexture = new Texture("/assets/textures/particle.png", scene);
 
         // emitting partlicle  place
         particleSystem.emitter = spaceShip; // Emite desde la nave

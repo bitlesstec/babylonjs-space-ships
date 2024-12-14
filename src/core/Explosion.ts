@@ -3,19 +3,17 @@ import { Color4, ParticleSystem, Texture, Vector3, Scene } from "@babylonjs/core
 
 
 
-export default class Explosion
-{
+export default class Explosion {
 
 
     particleSystem: ParticleSystem;
 
-    constructor( emmiterPosition:Vector3, scene:Scene)
-    {
+    constructor(emmiterPosition: Vector3, scene: Scene) {
 
         this.particleSystem = new ParticleSystem("explosionParticles", 500, scene);
 
         // Definir la textura de las partículas (una imagen simple de flare funciona bien)
-        this.particleSystem.particleTexture = new Texture("/assets/textures/particle.png" , scene);
+        this.particleSystem.particleTexture = new Texture("/assets/textures/particle.png", scene);
 
         // Configurar el origen de la explosión
         this.particleSystem.emitter = emmiterPosition;
@@ -34,9 +32,9 @@ export default class Explosion
         this.particleSystem.updateSpeed = 0.03;
 
         // Configurar el color de las partículas
-        this.particleSystem.color1 = new Color4(1, 0, 0, 1); 
-        this.particleSystem.color2 = new Color4(1, 1, 0, 1); 
-        this.particleSystem.colorDead = new Color4(1,1,1,1); 
+        this.particleSystem.color1 = new Color4(1, 0, 0, 1);
+        this.particleSystem.color2 = new Color4(1, 1, 0, 1);
+        this.particleSystem.colorDead = new Color4(1, 1, 1, 1);
 
         // Definir dirección de emisión en todas las direcciones
         this.particleSystem.direction1 = new Vector3(-1, -1, -1);
@@ -49,9 +47,8 @@ export default class Explosion
     }
 
 
-    explode( position:Vector3, executor = function(){} )
-    {
-        console.log("exploding boom!")
+    explode(position: Vector3, executor = function () { }) {
+        // console.log("exploding boom!")
         this.particleSystem.emitter = position;
         this.particleSystem.start()
         setTimeout(() => {
@@ -60,8 +57,7 @@ export default class Explosion
         }, 700)
     }
 
-    setShipColors()
-    {
+    setShipColors() {
         this.particleSystem.color1 = new Color4(1, 1, 1, 1); // white
         this.particleSystem.color2 = new Color4(0.7, 0.8, 1.0, 1.0); //whithe blue
         this.particleSystem.colorDead = new Color4(0.2, 0.5, 1.0, 1.0); // dark blue
